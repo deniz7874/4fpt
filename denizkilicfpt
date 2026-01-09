@@ -1,3 +1,11 @@
+/* 
+Name: Deniz Kilic
+Date: January 7, 2026
+Description: rythm game temp
+Resources: 
+ */
+
+ 
 import javax.swing.*;
 import java.awt.*;
 
@@ -43,5 +51,8 @@ public class denizkilicfpt {
         // addd panel to frame
         frame.add(panel);
         frame.setVisible(true);
+
+        // quit button functionality
+        quitButton.addActionListener(e -> System.exit(0));
     }
 }
