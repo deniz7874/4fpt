@@ -1,0 +1,47 @@
+import javax.swing.*;
+import java.awt.*;
+
+public class denizkilicfpt {
+
+    public static void main(String[] args) {
+        // create frame
+        JFrame frame = new JFrame("Game Start Menu");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 300);
+        frame.setLocationRelativeTo(null); // Center the window
+
+        // create panel with vertical layout
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(Color.DARK_GRAY);
+
+        // create buttons
+        JButton songSelectionButton = new JButton("Song Selection");
+        JButton settingsButton = new JButton("Settings");
+        JButton helpButton = new JButton("Help");
+        JButton quitButton = new JButton("Quit");
+
+        // button font
+        Font buttonFont = new Font("Arial", Font.BOLD, 16);
+        for (JButton button : new JButton[]{songSelectionButton, settingsButton, helpButton, quitButton}) {
+            button.setAlignmentX(Component.CENTER_ALIGNMENT);
+            button.setFont(buttonFont);
+            button.setMaximumSize(new Dimension(200, 40));
+        }
+
+        // add buttons to panel and spacing
+        panel.add(Box.createVerticalGlue());
+        panel.add(songSelectionButton);
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        panel.add(settingsButton);
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        panel.add(helpButton);
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        panel.add(quitButton);
+        panel.add(Box.createVerticalGlue());
+
+        // addd panel to frame
+        frame.add(panel);
+        frame.setVisible(true);
+    }
+}
