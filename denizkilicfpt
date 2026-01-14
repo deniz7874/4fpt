@@ -6,19 +6,49 @@ Resources:
  */
 
  
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class denizkilicfpt {
+    
+    // Global settings variables
+    private static int volume = 50;
+    private static String difficulty = "Normal";
+    private static int noteSpeed = 50;
+    private static boolean fullscreen = false;
+    private static JFrame mainFrame;
+    private static CardLayout cardLayout;
+    private static JPanel cardPanel;
 
     public static void main(String[] args) {
         // create frame
-        JFrame frame = new JFrame("Game Start Menu");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
-        frame.setLocationRelativeTo(null); // Center the window
+        mainFrame = new JFrame("Game Start Menu");
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setSize(400, 350);
+        mainFrame.setLocationRelativeTo(null); // Center the window
 
-        // create panel with vertical layout
+        // create CardLayout for switching between screens
+        cardLayout = new CardLayout();
+        cardPanel = new JPanel(cardLayout);
+
+        // Create main menu panel
+        JPanel menuPanel = createMenuPanel();
+        cardPanel.add(menuPanel, "Menu");
+
+        // Create settings panel
+        JPanel settingsPanel = createSettingsPanel();
+        cardPanel.add(settingsPanel, "Settings");
+
+        // Create help panel
+        JPanel helpPanel = createHelpPanel();
+        cardPanel.add(helpPanel, "Help");
+
+        // Add cardPanel to frame
+        mainFrame.add(cardPanel);
+        mainFrame.setVisible(true);
+    }
+    
+    private static JPanel createMenuPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(Color.DARK_GRAY);
@@ -48,11 +78,156 @@ public class denizkilicfpt {
         panel.add(quitButton);
         panel.add(Box.createVerticalGlue());
 
-        // addd panel to frame
-        frame.add(panel);
-        frame.setVisible(true);
-
         // quit button functionality
         quitButton.addActionListener(e -> System.exit(0));
+        
+        // settings button functionality
+        settingsButton.addActionListener(e -> cardLayout.show(cardPanel, "Settings"));
+        
+        // help button functionality
+        helpButton.addActionListener(e -> cardLayout.show(cardPanel, "Help"));
+        
+        return panel;
+    }
+    
+    private static JPanel createSettingsPanel() {
+        // settings screen
+        JPanel settingsPanel = new JPanel();
+        settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.Y_AXIS));
+        settingsPanel.setBackground(Color.DARK_GRAY);
+        settingsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        
+        // Title
+        JLabel titleLabel = new JLabel("Settings");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        settingsPanel.add(titleLabel);
+        settingsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        
+        // Volume Control
+        JLabel volumeLabel = new JLabel("Volume: " + volume);
+        volumeLabel.setForeground(Color.WHITE);
+        volumeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        settingsPanel.add(volumeLabel);
+        
+        JSlider volumeSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, volume);
+        volumeSlider.setMajorTickSpacing(10);
+        volumeSlider.setMinorTickSpacing(1);
+        volumeSlider.setPaintTicks(true);
+        volumeSlider.setPaintLabels(false);
+        volumeSlider.setBackground(Color.DARK_GRAY);
+        volumeSlider.setForeground(Color.WHITE);
+        volumeSlider.addChangeListener(e -> {
+            volume = volumeSlider.getValue();
+            volumeLabel.setText("Volume: " + volume);
+        });
+        settingsPanel.add(volumeSlider);
+        settingsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        
+        // Difficulty Control
+        JLabel difficultyLabel = new JLabel("Difficulty: " + difficulty);
+        difficultyLabel.setForeground(Color.WHITE);
+        difficultyLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        settingsPanel.add(difficultyLabel);
+        
+        JPanel difficultyPanel = new JPanel();
+        difficultyPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        difficultyPanel.setBackground(Color.DARK_GRAY);
+        
+        String[] difficulties = {"Easy", "Normal", "Hard"};
+        JComboBox<String> difficultyCombo = new JComboBox<>(difficulties);
+        difficultyCombo.setSelectedItem(difficulty);
+        difficultyCombo.addActionListener(e -> {
+            difficulty = (String) difficultyCombo.getSelectedItem();
+            difficultyLabel.setText("Difficulty: " + difficulty);
+        });
+        difficultyPanel.add(difficultyCombo);
+        settingsPanel.add(difficultyPanel);
+        settingsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        
+        // Note Speed Control
+        JLabel noteSpeedLabel = new JLabel("Note Speed: " + noteSpeed);
+        noteSpeedLabel.setForeground(Color.WHITE);
+        noteSpeedLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        settingsPanel.add(noteSpeedLabel);
+        
+        JSlider noteSpeedSlider = new JSlider(JSlider.HORIZONTAL, 1, 100, noteSpeed);
+        noteSpeedSlider.setMajorTickSpacing(10);
+        noteSpeedSlider.setMinorTickSpacing(1);
+        noteSpeedSlider.setPaintTicks(true);
+        noteSpeedSlider.setPaintLabels(false);
+        noteSpeedSlider.setBackground(Color.DARK_GRAY);
+        noteSpeedSlider.setForeground(Color.WHITE);
+        noteSpeedSlider.addChangeListener(e -> {
+            noteSpeed = noteSpeedSlider.getValue();
+            noteSpeedLabel.setText("Note Speed: " + noteSpeed);
+        });
+        settingsPanel.add(noteSpeedSlider);
+        settingsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        
+        // Fullscreen Control
+        JCheckBox fullscreenCheckbox = new JCheckBox("Fullscreen", fullscreen);
+        fullscreenCheckbox.setForeground(Color.WHITE);
+        fullscreenCheckbox.setBackground(Color.DARK_GRAY);
+        fullscreenCheckbox.setAlignmentX(Component.LEFT_ALIGNMENT);
+        fullscreenCheckbox.addActionListener(e -> {
+            fullscreen = fullscreenCheckbox.isSelected();
+            if (fullscreen) {
+                mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            } else {
+                mainFrame.setExtendedState(JFrame.NORMAL);
+                mainFrame.setSize(400, 350);
+                mainFrame.setLocationRelativeTo(null);
+            }
+        });
+        settingsPanel.add(fullscreenCheckbox);
+        settingsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        
+        // Back button
+        JButton backButton = new JButton("Back");
+        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backButton.setMaximumSize(new Dimension(100, 40));
+        backButton.setFont(new Font("Arial", Font.BOLD, 14));
+        backButton.addActionListener(e -> cardLayout.show(cardPanel, "Menu"));
+        settingsPanel.add(backButton);
+        
+        settingsPanel.add(Box.createVerticalGlue());
+        
+        return settingsPanel;
+    }
+    
+    private static JPanel createHelpPanel() {
+        // Create main help panel
+        JPanel helpPanel = new JPanel();
+        helpPanel.setLayout(new BoxLayout(helpPanel, BoxLayout.Y_AXIS));
+        helpPanel.setBackground(Color.DARK_GRAY);
+        helpPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        
+        // Title
+        JLabel titleLabel = new JLabel("Help");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        helpPanel.add(titleLabel);
+        helpPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        
+        // Help text
+        JLabel helpText = new JLabel("temp");
+        helpText.setForeground(Color.WHITE);
+        helpText.setAlignmentX(Component.CENTER_ALIGNMENT);
+        helpPanel.add(helpText);
+        
+        helpPanel.add(Box.createVerticalGlue());
+        
+        // Back button
+        JButton backButton = new JButton("Back");
+        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backButton.setMaximumSize(new Dimension(100, 40));
+        backButton.setFont(new Font("Arial", Font.BOLD, 14));
+        backButton.addActionListener(e -> cardLayout.show(cardPanel, "Menu"));
+        helpPanel.add(backButton);
+        
+        return helpPanel;
     }
 }
