@@ -5,12 +5,31 @@ Description: rythm game temp
 Resources: 
  */
 
- 
 import java.awt.*;
+import java.io.File;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 
+
 public class denizkilicfpt {
+    // Music integration (wav file only)
+    public class music{
+ public static void incorrectSound(){
+        File here = new File("musicname.wav");
+        try{
+            Clip clip = AudioSystem.getClip();
+            clip.open(AudioSystem.getAudioInputStream(here));
+            clip.start();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+   
+}
+
     
+
     // Global settings variables
     private static int volume = 50;
     private static String difficulty = "Normal";
@@ -24,7 +43,7 @@ public class denizkilicfpt {
         // create frame
         mainFrame = new JFrame("Game Start Menu");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainFrame.setSize(400, 350);
+        mainFrame.setSize(1100, 800);
         mainFrame.setLocationRelativeTo(null); // Center the window
 
         // create CardLayout for switching between screens
@@ -47,7 +66,7 @@ public class denizkilicfpt {
         mainFrame.add(cardPanel);
         mainFrame.setVisible(true);
     }
-    
+
     private static JPanel createMenuPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -61,7 +80,7 @@ public class denizkilicfpt {
 
         // button font
         Font buttonFont = new Font("Arial", Font.BOLD, 16);
-        for (JButton button : new JButton[]{songSelectionButton, settingsButton, helpButton, quitButton}) {
+        for (JButton button : new JButton[] { songSelectionButton, settingsButton, helpButton, quitButton }) {
             button.setAlignmentX(Component.CENTER_ALIGNMENT);
             button.setFont(buttonFont);
             button.setMaximumSize(new Dimension(200, 40));
@@ -80,23 +99,23 @@ public class denizkilicfpt {
 
         // quit button functionality
         quitButton.addActionListener(e -> System.exit(0));
-        
+
         // settings button functionality
         settingsButton.addActionListener(e -> cardLayout.show(cardPanel, "Settings"));
-        
+
         // help button functionality
         helpButton.addActionListener(e -> cardLayout.show(cardPanel, "Help"));
-        
+
         return panel;
     }
-    
+
     private static JPanel createSettingsPanel() {
         // settings screen
         JPanel settingsPanel = new JPanel();
         settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.Y_AXIS));
         settingsPanel.setBackground(Color.DARK_GRAY);
         settingsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
+
         // Title
         JLabel titleLabel = new JLabel("Settings");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
@@ -104,13 +123,13 @@ public class denizkilicfpt {
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         settingsPanel.add(titleLabel);
         settingsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        
+
         // Volume Control
         JLabel volumeLabel = new JLabel("Volume: " + volume);
         volumeLabel.setForeground(Color.WHITE);
         volumeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         settingsPanel.add(volumeLabel);
-        
+
         JSlider volumeSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, volume);
         volumeSlider.setMajorTickSpacing(10);
         volumeSlider.setMinorTickSpacing(1);
@@ -124,18 +143,18 @@ public class denizkilicfpt {
         });
         settingsPanel.add(volumeSlider);
         settingsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        
+
         // Difficulty Control
         JLabel difficultyLabel = new JLabel("Difficulty: " + difficulty);
         difficultyLabel.setForeground(Color.WHITE);
         difficultyLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         settingsPanel.add(difficultyLabel);
-        
+
         JPanel difficultyPanel = new JPanel();
         difficultyPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         difficultyPanel.setBackground(Color.DARK_GRAY);
-        
-        String[] difficulties = {"Easy", "Normal", "Hard"};
+
+        String[] difficulties = { "Easy", "Normal", "Hard" };
         JComboBox<String> difficultyCombo = new JComboBox<>(difficulties);
         difficultyCombo.setSelectedItem(difficulty);
         difficultyCombo.addActionListener(e -> {
@@ -145,13 +164,13 @@ public class denizkilicfpt {
         difficultyPanel.add(difficultyCombo);
         settingsPanel.add(difficultyPanel);
         settingsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        
+
         // Note Speed Control
         JLabel noteSpeedLabel = new JLabel("Note Speed: " + noteSpeed);
         noteSpeedLabel.setForeground(Color.WHITE);
         noteSpeedLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         settingsPanel.add(noteSpeedLabel);
-        
+
         JSlider noteSpeedSlider = new JSlider(JSlider.HORIZONTAL, 1, 100, noteSpeed);
         noteSpeedSlider.setMajorTickSpacing(10);
         noteSpeedSlider.setMinorTickSpacing(1);
@@ -165,7 +184,7 @@ public class denizkilicfpt {
         });
         settingsPanel.add(noteSpeedSlider);
         settingsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        
+
         // Fullscreen Control
         JCheckBox fullscreenCheckbox = new JCheckBox("Fullscreen", fullscreen);
         fullscreenCheckbox.setForeground(Color.WHITE);
@@ -177,13 +196,13 @@ public class denizkilicfpt {
                 mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
             } else {
                 mainFrame.setExtendedState(JFrame.NORMAL);
-                mainFrame.setSize(400, 350);
+                mainFrame.setSize(1100, 800);
                 mainFrame.setLocationRelativeTo(null);
             }
         });
         settingsPanel.add(fullscreenCheckbox);
         settingsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        
+
         // Back button
         JButton backButton = new JButton("Back");
         backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -191,19 +210,19 @@ public class denizkilicfpt {
         backButton.setFont(new Font("Arial", Font.BOLD, 14));
         backButton.addActionListener(e -> cardLayout.show(cardPanel, "Menu"));
         settingsPanel.add(backButton);
-        
+
         settingsPanel.add(Box.createVerticalGlue());
-        
+
         return settingsPanel;
     }
-    
+
     private static JPanel createHelpPanel() {
         // Create main help panel
         JPanel helpPanel = new JPanel();
         helpPanel.setLayout(new BoxLayout(helpPanel, BoxLayout.Y_AXIS));
         helpPanel.setBackground(Color.DARK_GRAY);
         helpPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
+
         // Title
         JLabel titleLabel = new JLabel("Help");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
@@ -211,15 +230,15 @@ public class denizkilicfpt {
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         helpPanel.add(titleLabel);
         helpPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        
+
         // Help text
         JLabel helpText = new JLabel("temp");
         helpText.setForeground(Color.WHITE);
         helpText.setAlignmentX(Component.CENTER_ALIGNMENT);
         helpPanel.add(helpText);
-        
+
         helpPanel.add(Box.createVerticalGlue());
-        
+
         // Back button
         JButton backButton = new JButton("Back");
         backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -227,7 +246,7 @@ public class denizkilicfpt {
         backButton.setFont(new Font("Arial", Font.BOLD, 14));
         backButton.addActionListener(e -> cardLayout.show(cardPanel, "Menu"));
         helpPanel.add(backButton);
-        
+
         return helpPanel;
     }
 }
