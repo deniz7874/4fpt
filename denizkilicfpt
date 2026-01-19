@@ -7,6 +7,7 @@ Resources:
 
 import java.awt.*;
 import java.io.File;
+import java.util.*;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.*;
@@ -39,6 +40,232 @@ public class denizkilicfpt {
     private static CardLayout cardLayout;
     private static JPanel cardPanel;
 
+    // Game variables
+    private static ArrayList<Note> notes = new ArrayList<>();
+    private static int score = 0;
+    private static int combo = 0;
+    private static javax.swing.Timer gameTimer;
+    private static javax.swing.Timer spawnTimer;
+    private static Clip songClip;
+    private static final int HIT_ZONE_Y = 600;
+    private static final int NOTE_SPEED_BASE = 5;
+    private static final int LANE_WIDTH = 100;
+    private static final int LANE_START_X = 200;
+
+    // Beatmap: {time in ms, lane}
+    private static int[][] beatmap = {
+        {1000, 1},  // Down at 1.000s
+        {1455, 3},  // Right at 1.455s
+        {1909, 1},  // Down at 1.909s
+        {2364, 2},  // Up at 2.364s
+        {2818, 3},  // Right at 2.818s
+        {3273, 2},  // Up at 3.273s
+        {3727, 1},  // Down at 3.727s
+        {4182, 3},  // Right at 4.182s
+        {4636, 1},  // Down at 4.636s
+        {5091, 0},  // Left at 5.091s
+        {5545, 2},  // Up at 5.545s
+        {6000, 3},  // Right at 6.000s
+        {6455, 1},  // Down at 6.455s
+        {6909, 0},  // Left at 6.909s
+        {7364, 2},  // Up at 7.364s
+        {7818, 1},  // Down at 7.818s
+        {8273, 0},  // Left at 8.273s
+        {8727, 1},  // Down at 8.727s
+        {9182, 2},  // Up at 9.182s
+        {9636, 3},  // Right at 9.636s
+        {10091, 2}, // Up at 10.091s
+        {10545, 0}, // Left at 10.545s
+        {11000, 2}, // Up at 11.000s
+        {11455, 1}, // Down at 11.455s
+        {11909, 0}, // Left at 11.909s
+        {12364, 2}, // Up at 12.364s
+        {12818, 0}, // Left at 12.818s
+        {13273, 3}, // Right at 13.273s
+        {13727, 2}, // Up at 13.727s
+        {14182, 3}, // Right at 14.182s
+        {14636, 1}, // Down at 14.636s
+        {15091, 2}, // Up at 15.091s
+        {15545, 3}, // Right at 15.545s
+        {16000, 2}, // Up at 16.000s
+        {16455, 0}, // Left at 16.455s
+        {16909, 1}, // Down at 16.909s
+        {17364, 0}, // Left at 17.364s
+        {17818, 3}, // Right at 17.818s
+        {18273, 0}, // Left at 18.273s
+        {18727, 1}, // Down at 18.727s
+        {19182, 0}, // Left at 19.182s
+        {19636, 1}, // Down at 19.636s
+        {20091, 2}, // Up at 20.091s
+        {20545, 3}, // Right at 20.545s
+        {21000, 2}, // Up at 21.000s
+        {21455, 1}, // Down at 21.455s
+        {21909, 0}, // Left at 21.909s
+        {22364, 2}, // Up at 22.364s
+        {22818, 3}, // Right at 22.818s
+        {23273, 2}, // Up at 23.273s
+        {23727, 1}, // Down at 23.727s
+        {24182, 0}, // Left at 24.182s
+        {24636, 1}, // Down at 24.636s
+        {25091, 0}, // Left at 25.091s
+        {25545, 2}, // Up at 25.545s
+        {26000, 1}, // Down at 26.000s
+        {26455, 3}, // Right at 26.455s
+        {26909, 0}, // Left at 26.909s
+        {27364, 1}, // Down at 27.364s
+        {27818, 0}, // Left at 27.818s
+        {28273, 1}, // Down at 28.273s
+        {28727, 2}, // Up at 28.727s
+        {29182, 3}, // Right at 29.182s
+        {29636, 2}, // Up at 29.636s
+        {30091, 0}, // Left at 30.091s
+        {30545, 2}, // Up at 30.545s
+        {31000, 3}, // Right at 31.000s
+        {31455, 1}, // Down at 31.455s
+        {31909, 0}, // Left at 31.909s
+        {32364, 2}, // Up at 32.364s
+        {32818, 1}, // Down at 32.818s
+        {33273, 3}, // Right at 33.273s
+        {33727, 0}, // Left at 33.727s
+        {34182, 2}, // Up at 34.182s
+        {34636, 1}, // Down at 34.636s
+        {35091, 0}, // Left at 35.091s
+        {35545, 3}, // Right at 35.545s
+        {36000, 1}, // Down at 36.000s
+        {36455, 0}, // Left at 36.455s
+        {36909, 2}, // Up at 36.909s
+        {37364, 1}, // Down at 37.364s
+        {37818, 0}, // Left at 37.818s
+        {38273, 2}, // Up at 38.273s
+        {38727, 3}, // Right at 38.727s
+        {39182, 2}, // Up at 39.182s
+        {39636, 1}, // Down at 39.636s
+        {40091, 0}, // Left at 40.091s
+        {40545, 1}, // Down at 40.545s
+        {41000, 2}, // Up at 41.000s
+        {41455, 0}, // Left at 41.455s
+        {41909, 3}, // Right at 41.909s
+        {42364, 0}, // Left at 42.364s
+        {42818, 3}, // Right at 42.818s
+        {43273, 1}, // Down at 43.273s
+        {43727, 0}, // Left at 43.727s
+        {44182, 2}, // Up at 44.182s
+        {44636, 0}, // Left at 44.636s
+        {45091, 1}, // Down at 45.091s
+        {45545, 0}, // Left at 45.545s
+        {46000, 2}, // Up at 46.000s
+        {46455, 3}, // Right at 46.455s
+        {46909, 2}, // Up at 46.909s
+        {47364, 1}, // Down at 47.364s
+        {47818, 0}, // Left at 47.818s
+        {48273, 3}, // Right at 48.273s
+        {48727, 1}, // Down at 48.727s
+        {49182, 0}, // Left at 49.182s
+        {49636, 1}, // Down at 49.636s
+        {50091, 2}, // Up at 50.091s
+        {50545, 0}, // Left at 50.545s
+        {51000, 2}, // Up at 51.000s
+        {51455, 3}, // Right at 51.455s
+        {51909, 0}, // Left at 51.909s
+        {52364, 2}, // Up at 52.364s
+        {52818, 3}, // Right at 52.818s
+        {53273, 1}, // Down at 53.273s
+        {53727, 0}, // Left at 53.727s
+        {54182, 1}, // Down at 54.182s
+        {54636, 0}, // Left at 54.636s
+        {55091, 3}, // Right at 55.091s
+        {55545, 2}, // Up at 55.545s
+        {56000, 0}, // Left at 56.000s
+        {56455, 3}, // Right at 56.455s
+        {56909, 1}, // Down at 56.909s
+        {57364, 0}, // Left at 57.364s
+        {57818, 3}, // Right at 57.818s
+        {58273, 1}, // Down at 58.273s
+        {58727, 0}, // Left at 58.727s
+        {59182, 1}, // Down at 59.182s
+        {59636, 2}, // Up at 59.636s
+        {60091, 3}, // Right at 60.091s
+        {60545, 1}, // Down at 60.545s
+        {61000, 3}, // Right at 61.000s
+        {61455, 0}, // Left at 61.455s
+        {61909, 2}, // Up at 61.909s
+        {62364, 0}, // Left at 62.364s
+        {62818, 3}, // Right at 62.818s
+        {63273, 1}, // Down at 63.273s
+        {63727, 3}, // Right at 63.727s
+        {64182, 1}, // Down at 64.182s
+        {64636, 2}, // Up at 64.636s
+        {65091, 1}, // Down at 65.091s
+        {65545, 0}, // Left at 65.545s
+        {66000, 2}, // Up at 66.000s
+        {66455, 0}, // Left at 66.455s
+        {66909, 2}, // Up at 66.909s
+        {67364, 0}, // Left at 67.364s
+        {67818, 3}, // Right at 67.818s
+        {68273, 2}, // Up at 68.273s
+        {68727, 3}, // Right at 68.727s
+        {69182, 1}, // Down at 69.182s
+        {69636, 0}, // Left at 69.636s
+        {70091, 3}, // Right at 70.091s
+        {70545, 1}, // Down at 70.545s
+        {71000, 0}, // Left at 71.000s
+        {71455, 1}, // Down at 71.455s
+        {71909, 3}, // Right at 71.909s
+        {72364, 2}, // Up at 72.364s
+        {72818, 0}, // Left at 72.818s
+        {73273, 3}, // Right at 73.273s
+        {73727, 1}, // Down at 73.727s
+        {74182, 2}, // Up at 74.182s
+        {74636, 0}, // Left at 74.636s
+        {75091, 3}, // Right at 75.091s
+        {75545, 2}, // Up at 75.545s
+        {76000, 1}, // Down at 76.000s
+        {76455, 2}, // Up at 76.455s
+        {76909, 0}, // Left at 76.909s
+        {77364, 3}, // Right at 77.364s
+        {77818, 1}, // Down at 77.818s
+        {78273, 0}, // Left at 78.273s
+        {78727, 1}, // Down at 78.727s
+        {79182, 0}, // Left at 79.182s
+        {79636, 2}, // Up at 79.636s
+        {80091, 1}, // Down at 80.091s
+        {80545, 0}, // Left at 80.545s
+        {81000, 2}, // Up at 81.000s
+        {81455, 1}, // Down at 81.455s
+        {81909, 3}, // Right at 81.909s
+        {82364, 1}, // Down at 82.364s
+        {82818, 2}, // Up at 82.818s
+        {83273, 3}, // Right at 83.273s
+        {83727, 2}, // Up at 83.727s
+        {84182, 0}, // Left at 84.182s
+        {84636, 1}, // Down at 84.636s
+        {85091, 2}, // Up at 85.091s
+        {85545, 0}, // Left at 85.545s
+        {86000, 3}, // Right at 86.000s
+        {86455, 2}, // Up at 86.455s
+        {86909, 1}, // Down at 86.909s
+        {87364, 0}, // Left at 87.364s
+        {87818, 3}, // Right at 87.818s
+        {88273, 2}, // Up at 88.273s
+        {88727, 1}, // Down at 88.727s
+        {89182, 2}, // Up at 89.182s
+        {89636, 0}, // Left at 89.636s
+    };
+    private static int beatmapIndex = 0;
+    private static long startTime;
+
+    // Note class
+    static class Note {
+        int lane; // 0: left, 1: down, 2: up, 3: right
+        int y;
+        boolean hit = false;
+
+        Note(int lane) {
+            this.lane = lane;
+            this.y = 0;
+        }
+    }
+
     public static void main(String[] args) {
         // create frame
         mainFrame = new JFrame("Game Start Menu");
@@ -61,6 +288,14 @@ public class denizkilicfpt {
         // Create help panel
         JPanel helpPanel = createHelpPanel();
         cardPanel.add(helpPanel, "Help");
+
+        // Create song selection panel
+        JPanel songSelectionPanel = createSongSelectionPanel();
+        cardPanel.add(songSelectionPanel, "SongSelect");
+
+        // Create game panel
+        JPanel gamePanel = createGamePanel();
+        cardPanel.add(gamePanel, "Game");
 
         // Add cardPanel to frame
         mainFrame.add(cardPanel);
@@ -96,6 +331,9 @@ public class denizkilicfpt {
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
         panel.add(quitButton);
         panel.add(Box.createVerticalGlue());
+
+        // song selection button functionality
+        songSelectionButton.addActionListener(e -> cardLayout.show(cardPanel, "SongSelect"));
 
         // quit button functionality
         quitButton.addActionListener(e -> System.exit(0));
@@ -232,7 +470,7 @@ public class denizkilicfpt {
         helpPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
         // Help text
-        JLabel helpText = new JLabel("temp");
+        JLabel helpText = new JLabel("<html>Controls:<br>D - Left Lane<br>F - Down Lane<br>J - Up Lane<br>K - Right Lane<br><br>Hit notes when they reach the white line for points!</html>");
         helpText.setForeground(Color.WHITE);
         helpText.setAlignmentX(Component.CENTER_ALIGNMENT);
         helpPanel.add(helpText);
@@ -248,5 +486,204 @@ public class denizkilicfpt {
         helpPanel.add(backButton);
 
         return helpPanel;
+    }
+
+    private static JPanel createSongSelectionPanel() {
+        JPanel songPanel = new JPanel();
+        songPanel.setLayout(new BoxLayout(songPanel, BoxLayout.Y_AXIS));
+        songPanel.setBackground(Color.DARK_GRAY);
+        songPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        // Title
+        JLabel titleLabel = new JLabel("Song Selection");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        songPanel.add(titleLabel);
+        songPanel.add(Box.createRigidArea(new Dimension(0, 30)));
+
+        // Song name
+        JLabel songLabel = new JLabel("Battle Tendency: Bloody Stream");
+        songLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        songLabel.setForeground(Color.WHITE);
+        songLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        songPanel.add(songLabel);
+        songPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        // Play button
+        JButton playButton = new JButton("Play");
+        playButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        playButton.setMaximumSize(new Dimension(150, 40));
+        playButton.setFont(new Font("Arial", Font.BOLD, 16));
+        playButton.addActionListener(e -> {
+            cardLayout.show(cardPanel, "Game");
+            SwingUtilities.invokeLater(() -> {
+                GameCanvas canvas = (GameCanvas) ((JPanel) cardPanel.getComponent(4)).getComponent(0); // Game panel is now component 4
+                startGame();
+                canvas.requestFocusInWindow();
+            });
+        });
+        songPanel.add(playButton);
+        songPanel.add(Box.createVerticalGlue());
+
+        // Back button
+        JButton backButton = new JButton("Back to Menu");
+        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backButton.setMaximumSize(new Dimension(150, 40));
+        backButton.setFont(new Font("Arial", Font.BOLD, 14));
+        backButton.addActionListener(e -> cardLayout.show(cardPanel, "Menu"));
+        songPanel.add(backButton);
+
+        return songPanel;
+    }
+
+    private static JPanel createGamePanel() {
+        JPanel gamePanel = new JPanel();
+        gamePanel.setLayout(new BorderLayout());
+        gamePanel.setBackground(Color.BLACK);
+
+        // Game canvas
+        GameCanvas canvas = new GameCanvas();
+        gamePanel.add(canvas, BorderLayout.CENTER);
+
+        // Back button
+        JButton backButton = new JButton("Back to Song Selection");
+        backButton.addActionListener(e -> {
+            stopGame();
+            cardLayout.show(cardPanel, "SongSelect");
+        });
+        gamePanel.add(backButton, BorderLayout.SOUTH);
+
+        return gamePanel;
+    }
+
+    private static void startGame() {
+        notes.clear();
+        score = 0;
+        combo = 0;
+        beatmapIndex = 0;
+        startTime = System.currentTimeMillis();
+
+        // Play song
+        try {
+            File songFile = new File("battletendency.wav"); // Your WAV file
+            songClip = AudioSystem.getClip();
+            songClip.open(AudioSystem.getAudioInputStream(songFile));
+            songClip.start();
+        } catch (Exception e) {
+            System.out.println("Song not found or error playing. Game will run without music.");
+            e.printStackTrace();
+        }
+
+        // Game update timer
+        gameTimer = new javax.swing.Timer(16, e -> { // ~60 FPS
+            updateGame();
+            mainFrame.repaint();
+        });
+        gameTimer.start();
+    }
+
+    private static void stopGame() {
+        if (spawnTimer != null) spawnTimer.stop();
+        if (gameTimer != null) gameTimer.stop();
+        if (songClip != null) songClip.stop();
+        beatmapIndex = 0;
+    }
+
+    private static void updateGame() {
+        int speed = NOTE_SPEED_BASE + noteSpeed / 10;
+        for (int i = notes.size() - 1; i >= 0; i--) {
+            Note note = notes.get(i);
+            note.y += speed;
+            if (note.y > 700) { // Off screen
+                notes.remove(i);
+                combo = 0; // Miss
+            }
+        }
+
+        // Spawn notes from beatmap
+        long elapsed = System.currentTimeMillis() - startTime;
+        while (beatmapIndex < beatmap.length && elapsed >= beatmap[beatmapIndex][0]) {
+            notes.add(new Note(beatmap[beatmapIndex][1]));
+            beatmapIndex++;
+        }
+    }
+
+    private static void checkHit(int lane) {
+        for (Note note : notes) {
+            if (note.lane == lane && !note.hit) {
+                int distance = Math.abs(note.y - HIT_ZONE_Y);
+                if (distance < 100) { // Lenient timing window
+                    note.hit = true;
+                    int baseScore;
+                    if (distance < 20) {
+                        baseScore = 300; // Perfect hit
+                        System.out.println("Perfect!");
+                    } else if (distance < 50) {
+                        baseScore = 200; // Good hit
+                        System.out.println("Good!");
+                    } else {
+                        baseScore = 100; // Ok hit
+                        System.out.println("Ok!");
+                    }
+                    score += baseScore + combo * 10;
+                    combo++;
+                    notes.remove(note);
+                    System.out.println("Hit! Score: " + score + " Combo: " + combo);
+                    break;
+                }
+            }
+        }
+    }
+
+    // Custom canvas for drawing
+    static class GameCanvas extends JPanel {
+        public GameCanvas() {
+            setBackground(Color.BLACK);
+            setFocusable(true);
+            addKeyListener(new java.awt.event.KeyAdapter() {
+                public void keyPressed(java.awt.event.KeyEvent e) {
+                    System.out.println("Key pressed: " + e.getKeyChar());
+                    switch (e.getKeyCode()) {
+                        case java.awt.event.KeyEvent.VK_D: checkHit(0); break; // Left
+                        case java.awt.event.KeyEvent.VK_F: checkHit(1); break; // Down
+                        case java.awt.event.KeyEvent.VK_J: checkHit(2); break; // Up
+                        case java.awt.event.KeyEvent.VK_K: checkHit(3); break; // Right
+                    }
+                }
+            });
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D) g;
+
+            // Draw lanes
+            g2d.setColor(Color.GRAY);
+            for (int i = 0; i < 4; i++) {
+                int x = LANE_START_X + i * LANE_WIDTH;
+                g2d.drawRect(x, 0, LANE_WIDTH, 700);
+            }
+
+            // Draw hit zone
+            g2d.setColor(Color.WHITE);
+            g2d.fillRect(LANE_START_X, HIT_ZONE_Y - 10, 4 * LANE_WIDTH, 20);
+
+            // Draw notes
+            g2d.setColor(Color.RED);
+            for (Note note : notes) {
+                int x = LANE_START_X + note.lane * LANE_WIDTH + 10;
+                g2d.fillRect(x, note.y, 80, 80);
+            }
+
+            // Draw score
+            g2d.setColor(Color.WHITE);
+            g2d.setFont(new Font("Arial", Font.BOLD, 20));
+            g2d.drawString("Score: " + score, 50, 50);
+            g2d.drawString("Combo: " + combo, 50, 80);
+        }
+    }
+}
     }
 }
