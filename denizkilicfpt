@@ -2,7 +2,7 @@
 Name: Deniz Kilic
 Date: January 7, 2026
 Description: rythm game temp
-Resources: 
+Resources: check home computer history
  */
 
 import java.awt.*;
@@ -629,7 +629,7 @@ public class denizkilicfpt {
                     score += baseScore + combo * 10;
                     combo++;
                     notes.remove(note);
-                    System.out.println("Hit! Score: " + score + " Combo: " + combo);
+                    System.out.println("Hit! Score: " + score + " Streak: " + combo);
                     break;
                 }
             }
@@ -681,9 +681,7 @@ public class denizkilicfpt {
             g2d.setColor(Color.WHITE);
             g2d.setFont(new Font("Arial", Font.BOLD, 20));
             g2d.drawString("Score: " + score, 50, 50);
-            g2d.drawString("Combo: " + combo, 50, 80);
+            g2d.drawString("Streak: " + combo, 50, 80);
         }
-    }
-}
     }
 }
